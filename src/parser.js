@@ -28,21 +28,21 @@
 
 var RE_UnixEntry = new RegExp(
   "([bcdlfmpSs-])"
-    + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
-    + "(\\d+)\\s+"
-    + "(\\S+)\\s+"
-    + "(?:(\\S+)\\s+)?"
-    + "(\\d+)\\s+"
+  + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
+  + "(\\d+)\\s+"
+  + "(\\S+)\\s+"
+  + "(?:(\\S+)\\s+)?"
+  + "(\\d+)\\s+"
 
-    //numeric or standard format date
-    + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
+  //numeric or standard format date
+  + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
 
-    // year (for non-recent standard format)
-    // or time (for numeric or recent standard format)
-    + "(\\d+(?::\\d+)?)\\s*"
+  // year (for non-recent standard format)
+  // or time (for numeric or recent standard format)
+  + "(\\d+(?::\\d+)?)\\s"
 
-    //+ "(\\S*)(\\s*.*)"
-    + "(.*)"
+  //+ "(\\S*)(\\s*.*)"
+  + "(.*)"
 );
 
 // MSDOS format
@@ -101,7 +101,7 @@ exports.parseFtpEntries = function parseFtpEntries(listing, callback) {
   var i = 0;
   var parsed = [];
   var entries = splitEntries(listing);
-  entries.forEach(function(entry, i) {
+  entries.forEach(function (entry, i) {
     // Some servers include an official code-multiline sign at the beginning
     // of every string. We must strip it if that's the case.
     if (RE_MULTI.test(entry)) {
@@ -150,10 +150,10 @@ exports.parseFtpEntries = function parseFtpEntries(listing, callback) {
  * @param entries {Array.<string>|string} FTP file entry line.
  * @param callback {Function} Callback function with error or result.
  */
-exports.parseEntries = function(entries, callback) {
+exports.parseEntries = function (entries, callback) {
   callback(null, splitEntries(entries)
     .map(parseEntry)
-    .filter(function(entry) { return !!entry; }));
+    .filter(function (entry) { return !!entry; }));
 };
 
 /**
@@ -163,7 +163,7 @@ exports.parseEntries = function(entries, callback) {
  * @param entry {string} FTP file entry line
  * @returns {Object|null} Parsed object with the file entry properties
  */
-var parseEntry = exports.parseEntry = function(entry) {
+var parseEntry = exports.parseEntry = function (entry) {
   var c = entry.charAt(0);
 
   if ('bcdlps-'.indexOf(c) > -1) {
@@ -177,7 +177,7 @@ var parseEntry = exports.parseEntry = function(entry) {
 };
 
 var parsers = {
-  unix: function(entry) {
+  unix: function (entry) {
     var target, writePerm, readPerm, execPerm;
     var group = entry.match(RE_UnixEntry);
 
@@ -245,7 +245,7 @@ var parsers = {
       if (target) file.target = target;
 
       var g = 4;
-      ["user", "group", "other"].forEach(function(access) {
+      ["user", "group", "other"].forEach(function (access) {
         // Use != '-' to avoid having to check for suid and sticky bits
         readPerm = group[g] !== "-";
         writePerm = group[g + 1] !== "-";
@@ -265,7 +265,7 @@ var parsers = {
     }
   },
 
-  msdos: function(entry) {
+  msdos: function (entry) {
     var group = entry.match(RE_DOSEntry);
     var type;
 

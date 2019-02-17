@@ -10,8 +10,8 @@
 var assert = require("assert");
 var Parser = require("../src/parser");
 
-describe("jsftp file listing parser", function() {
-  it("test ftp unix STAT responses", function() {
+describe("jsftp file listing parser", function () {
+  it("test ftp unix STAT responses", function () {
     var str = "drwxr-xr-x    5 1001     1001         4096 Jan 09 11:52 .\r\n\
 drwxr-xr-x    4 0        0            4096 Sep 19 13:50 ..\r\n\
 -rw-------    1 1001     1001         1118 Jan 09 12:09 .bash_history\r\n\
@@ -123,8 +123,8 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
       }
     ];
 
-    Parser.parseEntries(str, function(err, entryArray) {
-      entryArray.forEach(function(entry, i) {
+    Parser.parseEntries(str, function (err, entryArray) {
+      entryArray.forEach(function (entry, i) {
         assert.equal(unixEntries[i].type, entry.type);
         assert.equal(unixEntries[i].size, entry.size);
         assert.equal(unixEntries[i].name, entry.name);
@@ -147,7 +147,7 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
     })
   });
 
-  it("test ftp unix LIST responses", function() {
+  it("test ftp unix LIST responses", function () {
     var str = "drwx--x---  10 mrclash  adm          4096 Aug  9 14:48 .\r\n\
  drwx--x---  10 mrclash  adm          4096 Aug  9 14:48 ..\r\n\
  -rw-r--r--   1 mrclash  pg223090      260 Mar 25  2008 .alias\r\n\
@@ -544,8 +544,8 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
       }
     ];
 
-    Parser.parseEntries(str, function(err, entryArray) {
-      entryArray.forEach(function(entry, i) {
+    Parser.parseEntries(str, function (err, entryArray) {
+      entryArray.forEach(function (entry, i) {
         assert.equal(unixEntries[i].type, entry.type);
         assert.equal(unixEntries[i].size, entry.size);
         assert.equal(unixEntries[i].name, entry.name);
@@ -567,8 +567,8 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
       });
     });
 
-    Parser.parseEntries(str2, function(err, entryArray) {
-      entryArray.forEach(function(entry, i) {
+    Parser.parseEntries(str2, function (err, entryArray) {
+      entryArray.forEach(function (entry, i) {
         assert.equal(unixEntries2[i].type, entry.type);
         assert.equal(unixEntries2[i].size, entry.size);
         assert.equal(unixEntries2[i].name, entry.name);
@@ -592,7 +592,7 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
   });
 
 
-  it("test ftp windows/DOS LIST responses", function() {
+  it("test ftp windows/DOS LIST responses", function () {
     var dosEntries = [
       {
         line: '04-27-00  09:09PM       <DIR>          licensed',
@@ -621,10 +621,10 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
         size: 589,
         time: +(new Date("04-14-99  03:47 PM")),
         name: 'readme.htm'
-      }   
+      }
     ];
 
-    dosEntries.forEach(function(entry) {
+    dosEntries.forEach(function (entry) {
       var result = Parser.parseEntry(entry.line);
 
       assert.equal(result.type, entry.type);
@@ -634,7 +634,7 @@ drwx------    2 1001     1001         4096 Oct 19 16:17 project2\r\n";
     });
   });
 
-  it("test FTP listing with bad line breaks", function(next) {
+  it("test FTP listing with bad line breaks", function (next) {
     var badStr = "\
 213-Status follows:\r\n\
 -rw-r--r-- 1 0 0 105981956 Dec 20 18:07 GAT\r\n\
@@ -645,7 +645,7 @@ arie\r\n\
 drwxr-xr-x    2 0        0            4096 Apr 16  2011 denton\r\n\
 213 End of status";
 
-    Parser.parseFtpEntries(badStr, function(err, entries) {
+    Parser.parseFtpEntries(badStr, function (err, entries) {
       assert.equal("GATSBY.MPG", entries[0].name);
       assert.equal("GIJO.MPG", entries[1].name);
       assert.equal("bourdarie", entries[2].name);
@@ -654,6 +654,17 @@ drwxr-xr-x    2 0        0            4096 Apr 16  2011 denton\r\n\
     });
   });
 
+  it("test FTP listing with names starting with one or more spaces", function (next) {
+    var str = "\
+    --rw-r-----   1 userName alternc       460 Aug 22 03:45  test1\r\n\
+    --rw-r-----   1 userName alternc       560 Aug 22 03:47   test2\r\n";
+
+    Parser.parseFtpEntries(str, function (err, entries) {
+      assert.equal(" test1", entries[0].name);
+      assert.equal("  test2", entries[1].name);
+      next();
+    });
+  });
 
   /*
    * We are not supporting MLSx commands yet
