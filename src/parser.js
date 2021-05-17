@@ -193,14 +193,14 @@ var parsers = {
       // Check whether we are given the time (recent file) or the year
       // (older file) in the file listing.
       if (group[20].indexOf(":") === -1) {
-        date = +new Date(group[19] + " " + group[20]).getTime();
+        date = +new Date(group[19] + " " + group[20] + " UTC");
       }
       else {
         var currentMonth = new Date().getMonth();
         var month = new Date(group[19]).getMonth();
         var year = new Date().getFullYear() - (currentMonth < month ? 1 : 0);
 
-        date = +new Date(group[19] + " " + group[20] + " " + year);
+        date = +new Date(group[19] + " " + group[20] + " " + year + " UTC");
       }
 
       // Ignoring '.' and '..' entries for now
